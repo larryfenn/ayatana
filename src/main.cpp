@@ -48,7 +48,7 @@
 #include <Wire.h>
 
 NineAxesMotion mySensor;                 //Object that for the sensor
-bool justStarted = true; // a 'first time' start, which means i can just hit the reboot button to pull a fresh frame
+bool transmit = true; // a 'first time' start, which means i can just hit the reboot button to pull a fresh frame
 
 void setup() //This code is executed once
 {
@@ -82,8 +82,7 @@ void loop() //This code is looped forever
   float mag_x = mySensor.readMagX();
   float mag_y = mySensor.readMagY();
   float mag_z = mySensor.readMagZ();
-  if(Serial.read() == 1 || justStarted) {
-    justStarted = false;
+  if(transmit) {
     Serial.write(reinterpret_cast<char*>(&w), sizeof(w));
     Serial.write(reinterpret_cast<char*>(&x), sizeof(x));
     Serial.write(reinterpret_cast<char*>(&y), sizeof(y));
@@ -91,6 +90,6 @@ void loop() //This code is looped forever
     Serial.write(reinterpret_cast<char*>(&mag_x), sizeof(mag_x));
     Serial.write(reinterpret_cast<char*>(&mag_y), sizeof(mag_y));
     Serial.write(reinterpret_cast<char*>(&mag_z), sizeof(mag_z));
-    Serial.flush();
   }
+  transmit = Serial.read() == 1;
 }
