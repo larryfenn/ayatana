@@ -48,7 +48,7 @@
 #include <Wire.h>
 
 NineAxesMotion mySensor;                 //Object that for the sensor
-bool transmit = true; // a 'first time' start, which means i can just hit the reboot button to pull a fresh frame
+bool justStarted = true; // a 'first time' start, which means i can just hit the reboot button to pull a fresh frame
 
 void setup() //This code is executed once
 {
@@ -72,17 +72,20 @@ void loop() //This code is looped forever
 
   /**
   **/
-  mySensor.updateQuat();
-  mySensor.updateMag();
-  //mySensor.updateCalibStatus();  //Update the Calibration Status
-  int16_t w = mySensor.readQuaternion(W_QUAT);
-  int16_t x = mySensor.readQuaternion(X_QUAT);
-  int16_t y = mySensor.readQuaternion(Y_QUAT);
-  int16_t z = mySensor.readQuaternion(Z_QUAT);
-  float mag_x = mySensor.readMagX();
-  float mag_y = mySensor.readMagY();
-  float mag_z = mySensor.readMagZ();
-  if(transmit) {
+  if(Serial.read() == 1 || justStarted) {
+    justStarted = false;
+    
+    mySensor.updateQuat();
+    mySensor.updateMag();
+    //mySensor.updateCalibStatus();  //Update the Calibration Status
+    int16_t w = mySensor.readQuaternion(W_QUAT);
+    int16_t x = mySensor.readQuaternion(X_QUAT);
+    int16_t y = mySensor.readQuaternion(Y_QUAT);
+    int16_t z = mySensor.readQuaternion(Z_QUAT);
+    float mag_x = mySensor.readMagX();
+    float mag_y = mySensor.readMagY();
+    float mag_z = mySensor.readMagZ();
+    
     Serial.write(reinterpret_cast<char*>(&w), sizeof(w));
     Serial.write(reinterpret_cast<char*>(&x), sizeof(x));
     Serial.write(reinterpret_cast<char*>(&y), sizeof(y));
@@ -90,6 +93,6 @@ void loop() //This code is looped forever
     Serial.write(reinterpret_cast<char*>(&mag_x), sizeof(mag_x));
     Serial.write(reinterpret_cast<char*>(&mag_y), sizeof(mag_y));
     Serial.write(reinterpret_cast<char*>(&mag_z), sizeof(mag_z));
+    Serial.flush();
   }
-  transmit = Serial.read() == 1;
 }
