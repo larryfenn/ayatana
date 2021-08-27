@@ -53,7 +53,7 @@ bool transmit = true; // a 'first time' start, which means i can just hit the re
 void setup() //This code is executed once
 {
   //Peripheral Initialization
-  Serial.begin(9600);           //Initialize the Serial Port to view information on the Serial Monitor
+  Serial.begin(115200);           //Initialize the Serial Port to view information on the Serial Monitor
   Wire.begin();                    //Initialize I2C communication to the let the library communicate with the sensor.
   //Sensor Initialization
   mySensor.initSensor();          //The I2C Address can be changed here inside this function in the library
